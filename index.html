@@ -1,85 +1,2167 @@
-const cases = [
+<!DOCTYPE html>
+<html lang="en">
 
-{
-    title: "WHO?",
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    prompt:
-    "A young Asian businessman working on a laptop " +
-    "in a bright modern café.",
+<title>Prompt Detective | AI Mini Challenge</title>
 
-    images: [
-        "images/q1-a.png",
-        "images/q1-b.png",
-        "images/q1-c.png"
-    ],
+<style>
 
-    answer: 0
-},
-
-{
-    title: "WHERE?",
-
-    prompt:
-    "A young Asian businesswoman working on a laptop " +
-    "beside a large window in a modern café.",
-
-    images: [
-        "images/q2-a.png",
-        "images/q2-b.png",
-        "images/q2-c.png"
-    ],
-
-    answer: 2
-},
-
-{
-    title: "WHAT?",
-
-    prompt:
-    "A young Asian businessman holding a white coffee cup " +
-    "while looking at his laptop in a modern café.",
-
-    images: [
-        "images/q3-a.png",
-        "images/q3-b.png",
-        "images/q3-c.png"
-    ],
-
-    answer: 1
-},
-
-{
-    title: "HOW?",
-
-    prompt:
-    "A close-up professional portrait of a young Asian " +
-    "businessman with soft natural window light " +
-    "coming from the left.",
-
-    images: [
-        "images/q4-a.png",
-        "images/q4-b.png",
-        "images/q4-c.png"
-    ],
-
-    answer: 0
-},
-
-{
-    title: "FINAL CASE",
-
-    prompt:
-    "A red electric bus travelling through Hong Kong at night " +
-    "in light rain, with wet road reflections, photographed " +
-    "from a low camera angle.",
-
-    images: [
-        "images/q5-a.png",
-        "images/q5-b.png",
-        "images/q5-c.png"
-    ],
-
-    answer: 2
+* {
+    box-sizing: border-box;
 }
 
+body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: Arial, "Segoe UI", sans-serif;
+    color: white;
+
+    background:
+        radial-gradient(circle at top right, #124f85, transparent 35%),
+        linear-gradient(135deg, #04101f, #071a33 55%, #0b3157);
+}
+
+button {
+    font-family: inherit;
+}
+
+.container {
+    width: 94%;
+    max-width: 1200px;
+    margin: auto;
+    padding: 25px 0 50px;
+}
+
+.screen {
+    display: none;
+}
+
+.screen.active {
+    display: block;
+}
+
+
+/* =========================
+   TOP BAR
+========================= */
+
+.topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    margin-bottom: 25px;
+}
+
+.brand-small {
+    color: #49dff5;
+    font-size: 12px;
+    font-weight: bold;
+    letter-spacing: 2px;
+}
+
+.brand-name {
+    margin-top: 4px;
+    font-size: 21px;
+    font-weight: bold;
+}
+
+.high-score-box {
+    padding: 10px 18px;
+
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 12px;
+
+    background: rgba(255,255,255,0.08);
+
+    text-align: center;
+}
+
+.high-score-box small {
+    display: block;
+    color: #bbcee0;
+    font-size: 10px;
+    letter-spacing: 1px;
+}
+
+.high-score-box strong {
+    color: #ffc857;
+    font-size: 22px;
+}
+
+
+/* =========================
+   START SCREEN
+========================= */
+
+.start-card {
+    min-height: 600px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    padding: 40px 20px;
+
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 28px;
+
+    background: rgba(5,25,48,0.78);
+
+    text-align: center;
+}
+
+.badge {
+    padding: 8px 15px;
+
+    color: #49dff5;
+
+    border: 1px solid #238ba4;
+    border-radius: 30px;
+
+    letter-spacing: 2px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.main-title {
+    margin: 20px 0 5px;
+
+    font-size: clamp(45px, 8vw, 82px);
+    line-height: 0.95;
+}
+
+.main-title span {
+    display: block;
+    color: #49dff5;
+}
+
+.subtitle {
+    max-width: 650px;
+
+    margin: 25px auto;
+
+    color: #c4d5e5;
+
+    font-size: 18px;
+    line-height: 1.6;
+}
+
+.rules {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+
+    gap: 12px;
+
+    width: 100%;
+    max-width: 650px;
+
+    margin: 20px auto 30px;
+}
+
+.rule {
+    padding: 18px 10px;
+
+    background: rgba(255,255,255,0.07);
+
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 14px;
+}
+
+.rule strong {
+    display: block;
+
+    color: #49dff5;
+    font-size: 22px;
+}
+
+.rule span {
+    color: #bcd0e2;
+    font-size: 12px;
+}
+
+
+/* =========================
+   BUTTONS
+========================= */
+
+.primary-button,
+.next-button {
+
+    padding: 15px 28px;
+
+    border: 0;
+    border-radius: 12px;
+
+    background: linear-gradient(135deg, #0878d1, #00a9ef);
+
+    color: white;
+
+    font-size: 16px;
+    font-weight: bold;
+
+    cursor: pointer;
+
+    transition: 0.2s;
+}
+
+.primary-button:hover,
+.next-button:hover {
+
+    transform: translateY(-2px);
+
+    box-shadow: 0 10px 25px rgba(0,120,212,0.35);
+}
+
+
+/* =========================
+   GAME HEADER
+========================= */
+
+.game-header {
+
+    display: grid;
+
+    grid-template-columns: 1fr auto auto;
+
+    gap: 12px;
+
+    align-items: center;
+
+    margin-bottom: 18px;
+}
+
+.case-label {
+
+    color: #49dff5;
+
+    font-size: 12px;
+
+    font-weight: bold;
+
+    letter-spacing: 2px;
+}
+
+.case-title {
+
+    margin: 4px 0 0;
+
+    font-size: 27px;
+}
+
+.stat-card {
+
+    min-width: 110px;
+
+    padding: 10px 15px;
+
+    background: rgba(255,255,255,0.08);
+
+    border: 1px solid rgba(255,255,255,0.15);
+
+    border-radius: 13px;
+
+    text-align: center;
+}
+
+.stat-card small {
+
+    display: block;
+
+    color: #b9cede;
+
+    font-size: 10px;
+
+    letter-spacing: 1px;
+}
+
+.stat-card strong {
+
+    display: block;
+
+    margin-top: 4px;
+
+    font-size: 24px;
+}
+
+.timer-danger {
+
+    color: #ff5a6d;
+
+    border-color: #ff5a6d;
+}
+
+
+/* =========================
+   PROGRESS BAR
+========================= */
+
+.progress-track {
+
+    height: 7px;
+
+    margin-bottom: 20px;
+
+    overflow: hidden;
+
+    border-radius: 10px;
+
+    background: rgba(255,255,255,0.1);
+}
+
+.progress-bar {
+
+    height: 100%;
+
+    background: linear-gradient(90deg, #0878d1, #49dff5);
+
+    transition: width 0.3s;
+}
+
+
+/* =========================
+   PROMPT
+========================= */
+
+.prompt-box {
+
+    margin-bottom: 20px;
+
+    padding: 22px;
+
+    border-left: 5px solid #49dff5;
+
+    border-radius: 14px;
+
+    background: rgba(255,255,255,0.08);
+}
+
+.prompt-label {
+
+    color: #49dff5;
+
+    font-size: 11px;
+
+    font-weight: bold;
+
+    letter-spacing: 2px;
+}
+
+.prompt-text {
+
+    margin: 8px 0 0;
+
+    font-size: clamp(18px, 3vw, 23px);
+
+    font-weight: bold;
+
+    line-height: 1.5;
+}
+
+.instruction {
+
+    text-align: center;
+
+    color: #c6d6e5;
+
+    font-weight: bold;
+
+    margin-bottom: 15px;
+}
+
+
+/* =========================
+   IMAGES
+========================= */
+
+.image-grid {
+
+    display: grid;
+
+    grid-template-columns: repeat(3, 1fr);
+
+    gap: 16px;
+}
+
+.image-option {
+
+    position: relative;
+
+    padding: 0;
+
+    overflow: hidden;
+
+    border: 3px solid transparent;
+
+    border-radius: 18px;
+
+    background: #102c4c;
+
+    cursor: pointer;
+
+    transition: 0.2s;
+}
+
+.image-option:hover {
+
+    transform: translateY(-4px);
+
+    border-color: #49dff5;
+}
+
+.image-option:disabled {
+
+    cursor: default;
+}
+
+.image-option img {
+
+    display: block;
+
+    width: 100%;
+
+    aspect-ratio: 4 / 3;
+
+    object-fit: cover;
+}
+
+.letter {
+
+    position: absolute;
+
+    top: 10px;
+    left: 10px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    width: 40px;
+    height: 40px;
+
+    border-radius: 50%;
+
+    background: rgba(0,0,0,0.78);
+
+    color: white;
+
+    font-size: 19px;
+
+    font-weight: bold;
+}
+
+.image-option.correct {
+
+    border-color: #25ce78;
+
+    box-shadow: 0 0 0 3px rgba(37,206,120,0.25);
+}
+
+.image-option.wrong {
+
+    border-color: #ff5a6d;
+
+    opacity: 0.55;
+}
+
+
+/* =========================
+   FEEDBACK
+========================= */
+
+.feedback {
+
+    margin-top: 22px;
+
+    padding: 20px;
+
+    border-radius: 15px;
+
+    text-align: center;
+}
+
+.feedback.correct {
+
+    background: rgba(37,206,120,0.13);
+
+    border: 1px solid #25ce78;
+}
+
+.feedback.wrong {
+
+    background: rgba(255,90,109,0.13);
+
+    border: 1px solid #ff5a6d;
+}
+
+.feedback h2 {
+
+    margin-top: 0;
+}
+
+.feedback p {
+
+    color: #cedbe7;
+
+    line-height: 1.5;
+}
+
+.points {
+
+    color: #ffc857;
+
+    font-size: 20px;
+
+    font-weight: bold;
+}
+
+.next-button {
+
+    margin-top: 10px;
+}
+
+.hidden {
+
+    display: none;
+}
+
+
+/* =========================
+   RESULT
+========================= */
+
+.result-card {
+
+    max-width: 720px;
+
+    margin: 30px auto;
+
+    padding: 50px 25px;
+
+    border: 1px solid rgba(255,255,255,0.15);
+
+    border-radius: 26px;
+
+    background: rgba(5,25,48,0.82);
+
+    text-align: center;
+}
+
+.trophy {
+
+    font-size: 65px;
+}
+
+.final-score {
+
+    margin: 20px 0 5px;
+
+    color: #ffc857;
+
+    font-size: clamp(60px, 12vw, 95px);
+
+    font-weight: bold;
+}
+
+.rank {
+
+    color: #49dff5;
+
+    font-size: 26px;
+
+    font-weight: bold;
+
+    margin-bottom: 25px;
+}
+
+.result-stats {
+
+    display: grid;
+
+    grid-template-columns: repeat(3, 1fr);
+
+    gap: 12px;
+
+    margin: 25px 0;
+}
+
+.result-stat {
+
+    padding: 18px 8px;
+
+    border: 1px solid rgba(255,255,255,0.15);
+
+    border-radius: 13px;
+
+    background: rgba(255,255,255,0.06);
+}
+
+.result-stat strong {
+
+    display: block;
+
+    color: white;
+
+    font-size: 23px;
+}
+
+.result-stat span {
+
+    color: #bcd0e2;
+
+    font-size: 11px;
+}
+
+
+/* =========================
+   MOBILE
+========================= */
+
+@media (max-width: 750px) {
+
+    .game-header {
+
+        grid-template-columns: 1fr 95px;
+    }
+
+    .timer-card {
+
+        grid-column: 1 / -1;
+    }
+
+    .image-grid {
+
+        grid-template-columns: 1fr;
+    }
+
+    .image-option img {
+
+        aspect-ratio: 16 / 10;
+    }
+
+    .rules {
+
+        grid-template-columns: 1fr;
+    }
+
+    .result-stats {
+
+        grid-template-columns: 1fr;
+    }
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+<div class="container">
+
+
+<!-- =====================
+     TOP BAR
+===================== -->
+
+<header class="topbar">
+
+    <div>
+        <div class="brand-small">
+            AI MINI CHALLENGE
+        </div>
+
+        <div class="brand-name">
+            🔎 Prompt Detective
+        </div>
+    </div>
+
+    <div class="high-score-box">
+
+        <small>HIGH SCORE</small>
+
+        <strong id="highScoreDisplay">
+            0
+        </strong>
+
+    </div>
+
+</header>
+
+
+
+<!-- =====================
+     START SCREEN
+===================== -->
+
+<section
+    id="startScreen"
+    class="screen active"
+>
+
+    <div class="start-card">
+
+        <div class="badge">
+            CSCM AI PLAYGROUND
+        </div>
+
+        <h1 class="main-title">
+
+            PROMPT
+
+            <span>
+                DETECTIVE
+            </span>
+
+        </h1>
+
+        <p class="subtitle">
+
+            Read the AI prompt,
+            inspect the three images
+            and find the exact match
+            before time runs out.
+
+        </p>
+
+
+        <div class="rules">
+
+            <div class="rule">
+
+                <strong>
+                    5
+                </strong>
+
+                <span>
+                    Detective Cases
+                </span>
+
+            </div>
+
+
+            <div class="rule">
+
+                <strong>
+                    15s
+                </strong>
+
+                <span>
+                    Per Case
+                </span>
+
+            </div>
+
+
+            <div class="rule">
+
+                <strong>
+                    +300
+                </strong>
+
+                <span>
+                    Maximum Points
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <button
+            id="startButton"
+            class="primary-button"
+            type="button"
+        >
+
+            START INVESTIGATION 🔎
+
+        </button>
+
+    </div>
+
+</section>
+
+
+
+<!-- =====================
+     GAME SCREEN
+===================== -->
+
+<section
+    id="gameScreen"
+    class="screen"
+>
+
+    <div class="game-header">
+
+        <div>
+
+            <div
+                id="caseLabel"
+                class="case-label"
+            >
+                CASE 1 OF 5
+            </div>
+
+            <h2
+                id="caseTitle"
+                class="case-title"
+            >
+                WHO?
+            </h2>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <small>
+                SCORE
+            </small>
+
+            <strong
+                id="scoreDisplay"
+            >
+                0
+            </strong>
+
+        </div>
+
+
+        <div
+            id="timerCard"
+            class="stat-card timer-card"
+        >
+
+            <small>
+                TIME
+            </small>
+
+            <strong>
+
+                <span
+                    id="timerDisplay"
+                >
+                    15
+                </span>s
+
+            </strong>
+
+        </div>
+
+    </div>
+
+
+    <div class="progress-track">
+
+        <div
+            id="progressBar"
+            class="progress-bar"
+        >
+        </div>
+
+    </div>
+
+
+    <div class="prompt-box">
+
+        <div class="prompt-label">
+            AI IMAGE PROMPT
+        </div>
+
+        <p
+            id="promptText"
+            class="prompt-text"
+        >
+        </p>
+
+    </div>
+
+
+    <p class="instruction">
+
+        Which image exactly matches the prompt?
+
+    </p>
+
+
+    <div
+        id="imageGrid"
+        class="image-grid"
+    >
+    </div>
+
+
+    <div
+        id="feedback"
+        class="feedback hidden"
+    >
+
+        <h2
+            id="feedbackTitle"
+        >
+        </h2>
+
+        <p
+            id="feedbackText"
+        >
+        </p>
+
+        <div
+            id="pointsText"
+            class="points"
+        >
+        </div>
+
+
+        <button
+            id="nextButton"
+            class="next-button"
+            type="button"
+        >
+
+            NEXT CASE
+
+        </button>
+
+    </div>
+
+</section>
+
+
+
+<!-- =====================
+     RESULT SCREEN
+===================== -->
+
+<section
+    id="resultScreen"
+    class="screen"
+>
+
+    <div class="result-card">
+
+        <div class="trophy">
+            🏆
+        </div>
+
+        <h1>
+            INVESTIGATION COMPLETE
+        </h1>
+
+        <div
+            id="finalScore"
+            class="final-score"
+        >
+            0
+        </div>
+
+        <div
+            id="finalRank"
+            class="rank"
+        >
+            PROMPT DETECTIVE
+        </div>
+
+
+        <div class="result-stats">
+
+            <div class="result-stat">
+
+                <strong
+                    id="accuracyResult"
+                >
+                    0/5
+                </strong>
+
+                <span>
+                    Accuracy
+                </span>
+
+            </div>
+
+
+            <div class="result-stat">
+
+                <strong
+                    id="streakResult"
+                >
+                    0
+                </strong>
+
+                <span>
+                    Best Streak
+                </span>
+
+            </div>
+
+
+            <div class="result-stat">
+
+                <strong
+                    id="highScoreResult"
+                >
+                    0
+                </strong>
+
+                <span>
+                    High Score
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <button
+            id="restartButton"
+            class="primary-button"
+            type="button"
+        >
+
+            PLAY AGAIN
+
+        </button>
+
+    </div>
+
+</section>
+
+
+</div>
+
+
+
+<script>
+
+/* =====================================================
+   QUESTIONS
+
+   answer:
+   0 = A
+   1 = B
+   2 = C
+
+   Correct sequence:
+   A -> C -> B -> A -> C
+===================================================== */
+
+
+const cases = [
+
+    {
+
+        title: "WHO?",
+
+        prompt:
+            "A young Asian businessman working on a laptop " +
+            "in a bright modern café.",
+
+        images: [
+
+            "q1-a.png",
+            "q1-b.png",
+            "q1-c.png"
+
+        ],
+
+        answer: 0,
+
+        explanation:
+            "The key clue is WHO. " +
+            "The prompt asks for a young Asian businessman."
+
+    },
+
+
+    {
+
+        title: "WHERE?",
+
+        prompt:
+            "A young Asian businesswoman working on a laptop " +
+            "beside a large window in a modern café.",
+
+        images: [
+
+            "q2-a.png",
+            "q2-b.png",
+            "q2-c.png"
+
+        ],
+
+        answer: 2,
+
+        explanation:
+            "The key clue is WHERE. " +
+            "The requested location is a modern café."
+
+    },
+
+
+    {
+
+        title: "WHAT?",
+
+        prompt:
+            "A young Asian businessman holding a white coffee cup " +
+            "while looking at his laptop in a modern café.",
+
+        images: [
+
+            "q3-a.png",
+            "q3-b.png",
+            "q3-c.png"
+
+        ],
+
+        answer: 1,
+
+        explanation:
+            "The key clue is WHAT. " +
+            "The person should be holding a white coffee cup."
+
+    },
+
+
+    {
+
+        title: "HOW?",
+
+        prompt:
+            "A close-up professional portrait of a young Asian " +
+            "businessman in a modern office, with soft natural " +
+            "window light coming from the left.",
+
+        images: [
+
+            "q4-a.png",
+            "q4-b.png",
+            "q4-c.png"
+
+        ],
+
+        answer: 0,
+
+        explanation:
+            "The key clue is HOW the scene is lit. " +
+            "The soft natural window light should come from the left."
+
+    },
+
+
+    {
+
+        title: "FINAL CASE",
+
+        prompt:
+            "A red electric bus travelling through Hong Kong " +
+            "at night in light rain, with wet road reflections, " +
+            "photographed from a low camera angle.",
+
+        images: [
+
+            "q5-a.png",
+            "q5-b.png",
+            "q5-c.png"
+
+        ],
+
+        answer: 2,
+
+        explanation:
+            "The exact match combines light rain, wet road " +
+            "reflections and a low camera angle."
+
+    }
+
 ];
+
+
+
+/* =====================================================
+   SETTINGS
+===================================================== */
+
+
+const ROUND_TIME = 15;
+
+const LETTERS = [
+    "A",
+    "B",
+    "C"
+];
+
+
+
+/* =====================================================
+   GAME STATE
+===================================================== */
+
+
+let currentCaseIndex = 0;
+
+let score = 0;
+
+let correctAnswers = 0;
+
+let currentStreak = 0;
+
+let bestStreak = 0;
+
+let timeRemaining = ROUND_TIME;
+
+let timer = null;
+
+let answered = false;
+
+
+
+/* =====================================================
+   ELEMENTS
+===================================================== */
+
+
+const startScreen =
+    document.getElementById(
+        "startScreen"
+    );
+
+
+const gameScreen =
+    document.getElementById(
+        "gameScreen"
+    );
+
+
+const resultScreen =
+    document.getElementById(
+        "resultScreen"
+    );
+
+
+const startButton =
+    document.getElementById(
+        "startButton"
+    );
+
+
+const restartButton =
+    document.getElementById(
+        "restartButton"
+    );
+
+
+const nextButton =
+    document.getElementById(
+        "nextButton"
+    );
+
+
+const caseLabel =
+    document.getElementById(
+        "caseLabel"
+    );
+
+
+const caseTitle =
+    document.getElementById(
+        "caseTitle"
+    );
+
+
+const promptText =
+    document.getElementById(
+        "promptText"
+    );
+
+
+const imageGrid =
+    document.getElementById(
+        "imageGrid"
+    );
+
+
+const scoreDisplay =
+    document.getElementById(
+        "scoreDisplay"
+    );
+
+
+const timerDisplay =
+    document.getElementById(
+        "timerDisplay"
+    );
+
+
+const timerCard =
+    document.getElementById(
+        "timerCard"
+    );
+
+
+const progressBar =
+    document.getElementById(
+        "progressBar"
+    );
+
+
+const feedback =
+    document.getElementById(
+        "feedback"
+    );
+
+
+const feedbackTitle =
+    document.getElementById(
+        "feedbackTitle"
+    );
+
+
+const feedbackText =
+    document.getElementById(
+        "feedbackText"
+    );
+
+
+const pointsText =
+    document.getElementById(
+        "pointsText"
+    );
+
+
+const highScoreDisplay =
+    document.getElementById(
+        "highScoreDisplay"
+    );
+
+
+
+/* =====================================================
+   SCREEN CONTROL
+===================================================== */
+
+
+function showScreen(screen) {
+
+    startScreen.classList.remove(
+        "active"
+    );
+
+    gameScreen.classList.remove(
+        "active"
+    );
+
+    resultScreen.classList.remove(
+        "active"
+    );
+
+    screen.classList.add(
+        "active"
+    );
+
+}
+
+
+
+/* =====================================================
+   HIGH SCORE
+===================================================== */
+
+
+function getHighScore() {
+
+    const saved =
+        Number(
+            localStorage.getItem(
+                "promptDetectiveHighScore"
+            )
+        );
+
+    if (
+        Number.isFinite(saved)
+    ) {
+
+        return saved;
+
+    }
+
+    return 0;
+
+}
+
+
+function updateHighScoreDisplay() {
+
+    highScoreDisplay.textContent =
+        getHighScore();
+
+}
+
+
+
+/* =====================================================
+   START GAME
+===================================================== */
+
+
+function startGame() {
+
+    clearInterval(timer);
+
+
+    currentCaseIndex = 0;
+
+    score = 0;
+
+    correctAnswers = 0;
+
+    currentStreak = 0;
+
+    bestStreak = 0;
+
+    answered = false;
+
+
+    scoreDisplay.textContent =
+        score;
+
+
+    showScreen(
+        gameScreen
+    );
+
+
+    loadCase();
+
+
+    window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+    });
+
+}
+
+
+
+/* =====================================================
+   LOAD CASE
+===================================================== */
+
+
+function loadCase() {
+
+    clearInterval(timer);
+
+
+    answered = false;
+
+
+    feedback.className =
+        "feedback hidden";
+
+
+    imageGrid.innerHTML =
+        "";
+
+
+    timerCard.classList.remove(
+        "timer-danger"
+    );
+
+
+    const question =
+        cases[currentCaseIndex];
+
+
+    caseLabel.textContent =
+        `CASE ${currentCaseIndex + 1} OF ${cases.length}`;
+
+
+    caseTitle.textContent =
+        question.title;
+
+
+    promptText.textContent =
+        question.prompt;
+
+
+    const progress =
+        ((currentCaseIndex + 1) /
+        cases.length) * 100;
+
+
+    progressBar.style.width =
+        `${progress}%`;
+
+
+    question.images.forEach(
+        (imagePath, index) => {
+
+            const button =
+                document.createElement(
+                    "button"
+                );
+
+
+            button.type =
+                "button";
+
+
+            button.className =
+                "image-option";
+
+
+            const image =
+                document.createElement(
+                    "img"
+                );
+
+
+            image.src =
+                imagePath;
+
+
+            image.alt =
+                `Option ${LETTERS[index]}`;
+
+
+            const letter =
+                document.createElement(
+                    "div"
+                );
+
+
+            letter.className =
+                "letter";
+
+
+            letter.textContent =
+                LETTERS[index];
+
+
+            button.appendChild(
+                image
+            );
+
+
+            button.appendChild(
+                letter
+            );
+
+
+            button.addEventListener(
+                "click",
+                () => {
+
+                    selectAnswer(
+                        index
+                    );
+
+                }
+            );
+
+
+            imageGrid.appendChild(
+                button
+            );
+
+        }
+    );
+
+
+    startTimer();
+
+}
+
+
+
+/* =====================================================
+   TIMER
+===================================================== */
+
+
+function startTimer() {
+
+    timeRemaining =
+        ROUND_TIME;
+
+
+    timerDisplay.textContent =
+        timeRemaining;
+
+
+    timer =
+        setInterval(
+            () => {
+
+                timeRemaining--;
+
+
+                timerDisplay.textContent =
+                    timeRemaining;
+
+
+                if (
+                    timeRemaining <= 5
+                ) {
+
+                    timerCard.classList.add(
+                        "timer-danger"
+                    );
+
+                }
+
+
+                if (
+                    timeRemaining <= 0
+                ) {
+
+                    clearInterval(
+                        timer
+                    );
+
+
+                    handleTimeout();
+
+                }
+
+            },
+            1000
+        );
+
+}
+
+
+
+/* =====================================================
+   SELECT ANSWER
+===================================================== */
+
+
+function selectAnswer(
+    selectedIndex
+) {
+
+    if (
+        answered
+    ) {
+
+        return;
+
+    }
+
+
+    answered =
+        true;
+
+
+    clearInterval(
+        timer
+    );
+
+
+    const question =
+        cases[currentCaseIndex];
+
+
+    const buttons =
+        imageGrid.querySelectorAll(
+            ".image-option"
+        );
+
+
+    buttons.forEach(
+        button => {
+
+            button.disabled =
+                true;
+
+        }
+    );
+
+
+    buttons[
+        question.answer
+    ].classList.add(
+        "correct"
+    );
+
+
+    if (
+        selectedIndex ===
+        question.answer
+    ) {
+
+        handleCorrectAnswer();
+
+    }
+
+    else {
+
+        buttons[
+            selectedIndex
+        ].classList.add(
+            "wrong"
+        );
+
+
+        handleWrongAnswer();
+
+    }
+
+}
+
+
+
+/* =====================================================
+   CORRECT ANSWER
+===================================================== */
+
+
+function handleCorrectAnswer() {
+
+    let earnedPoints =
+        100;
+
+
+    if (
+        timeRemaining >= 10
+    ) {
+
+        earnedPoints =
+            300;
+
+    }
+
+    else if (
+        timeRemaining >= 5
+    ) {
+
+        earnedPoints =
+            200;
+
+    }
+
+
+    score +=
+        earnedPoints;
+
+
+    correctAnswers++;
+
+
+    currentStreak++;
+
+
+    if (
+        currentStreak >
+        bestStreak
+    ) {
+
+        bestStreak =
+            currentStreak;
+
+    }
+
+
+    let streakBonus =
+        0;
+
+
+    if (
+        currentStreak === 3
+    ) {
+
+        streakBonus =
+            100;
+
+
+        score +=
+            streakBonus;
+
+    }
+
+
+    scoreDisplay.textContent =
+        score;
+
+
+    feedback.className =
+        "feedback correct";
+
+
+    feedbackTitle.textContent =
+        "✅ CASE SOLVED!";
+
+
+    feedbackText.textContent =
+        cases[
+            currentCaseIndex
+        ].explanation;
+
+
+    if (
+        streakBonus > 0
+    ) {
+
+        pointsText.textContent =
+            `+${earnedPoints} points 🔥 3-CASE STREAK +100`;
+
+    }
+
+    else {
+
+        pointsText.textContent =
+            `+${earnedPoints} points`;
+
+    }
+
+
+    showFeedback();
+
+}
+
+
+
+/* =====================================================
+   WRONG ANSWER
+===================================================== */
+
+
+function handleWrongAnswer() {
+
+    currentStreak =
+        0;
+
+
+    feedback.className =
+        "feedback wrong";
+
+
+    feedbackTitle.textContent =
+        "❌ CASE MISSED";
+
+
+    feedbackText.textContent =
+        cases[
+            currentCaseIndex
+        ].explanation;
+
+
+    pointsText.textContent =
+        "0 points";
+
+
+    showFeedback();
+
+}
+
+
+
+/* =====================================================
+   TIME OUT
+===================================================== */
+
+
+function handleTimeout() {
+
+    if (
+        answered
+    ) {
+
+        return;
+
+    }
+
+
+    answered =
+        true;
+
+
+    currentStreak =
+        0;
+
+
+    const question =
+        cases[currentCaseIndex];
+
+
+    const buttons =
+        imageGrid.querySelectorAll(
+            ".image-option"
+        );
+
+
+    buttons.forEach(
+        button => {
+
+            button.disabled =
+                true;
+
+        }
+    );
+
+
+    buttons[
+        question.answer
+    ].classList.add(
+        "correct"
+    );
+
+
+    feedback.className =
+        "feedback wrong";
+
+
+    feedbackTitle.textContent =
+        "⏱️ TIME'S UP!";
+
+
+    feedbackText.textContent =
+        question.explanation;
+
+
+    pointsText.textContent =
+        "0 points";
+
+
+    showFeedback();
+
+}
+
+
+
+/* =====================================================
+   FEEDBACK
+===================================================== */
+
+
+function showFeedback() {
+
+    feedback.classList.remove(
+        "hidden"
+    );
+
+
+    if (
+        currentCaseIndex ===
+        cases.length - 1
+    ) {
+
+        nextButton.textContent =
+            "SEE FINAL SCORE";
+
+    }
+
+    else {
+
+        nextButton.textContent =
+            "NEXT CASE";
+
+    }
+
+}
+
+
+
+/* =====================================================
+   NEXT CASE
+===================================================== */
+
+
+function goToNextCase() {
+
+    if (
+        currentCaseIndex <
+        cases.length - 1
+    ) {
+
+        currentCaseIndex++;
+
+
+        loadCase();
+
+
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth"
+        });
+
+    }
+
+    else {
+
+        showResults();
+
+    }
+
+}
+
+
+
+/* =====================================================
+   FINAL RESULTS
+===================================================== */
+
+
+function showResults() {
+
+    clearInterval(
+        timer
+    );
+
+
+    const oldHighScore =
+        getHighScore();
+
+
+    if (
+        score >
+        oldHighScore
+    ) {
+
+        localStorage.setItem(
+            "promptDetectiveHighScore",
+            String(score)
+        );
+
+    }
+
+
+    const highScore =
+        Math.max(
+            score,
+            oldHighScore
+        );
+
+
+    let rank =
+        "";
+
+
+    if (
+        score >= 1300
+    ) {
+
+        rank =
+            "🏆 MASTER DETECTIVE";
+
+    }
+
+    else if (
+        score >= 1000
+    ) {
+
+        rank =
+            "🕵️ AI INVESTIGATOR";
+
+    }
+
+    else if (
+        score >= 600
+    ) {
+
+        rank =
+            "🔎 PROMPT DETECTIVE";
+
+    }
+
+    else {
+
+        rank =
+            "🌱 ROOKIE DETECTIVE";
+
+    }
+
+
+    document.getElementById(
+        "finalScore"
+    ).textContent =
+        score;
+
+
+    document.getElementById(
+        "finalRank"
+    ).textContent =
+        rank;
+
+
+    document.getElementById(
+        "accuracyResult"
+    ).textContent =
+        `${correctAnswers}/${cases.length}`;
+
+
+    document.getElementById(
+        "streakResult"
+    ).textContent =
+        bestStreak;
+
+
+    document.getElementById(
+        "highScoreResult"
+    ).textContent =
+        highScore;
+
+
+    updateHighScoreDisplay();
+
+
+    showScreen(
+        resultScreen
+    );
+
+
+    window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+    });
+
+}
+
+
+
+/* =====================================================
+   BUTTON EVENTS
+===================================================== */
+
+
+startButton.addEventListener(
+    "click",
+    startGame
+);
+
+
+restartButton.addEventListener(
+    "click",
+    startGame
+);
+
+
+nextButton.addEventListener(
+    "click",
+    goToNextCase
+);
+
+
+
+/* =====================================================
+   INITIAL SETUP
+===================================================== */
+
+
+updateHighScoreDisplay();
+
+</script>
+
+
+</body>
+
+</html>
